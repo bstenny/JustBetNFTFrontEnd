@@ -1,13 +1,14 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useState } from 'react';
+import {ConnectButton} from '@rainbow-me/rainbowkit';
+import {useState} from 'react';
 import * as React from 'react'
 import Head from 'next/head';
 import styles from '../styles/CoinFlip.module.css';
 import Navbar from "../components/Navbar";
-import { useAccount, usePrepareContractWrite, useContractWrite, useContractEvent, useWaitForTransaction } from "wagmi";
+import {useAccount, usePrepareContractWrite, useContractWrite, useContractEvent, useWaitForTransaction} from "wagmi";
 import placeBet from "../contract-abi.json"
 import {parseEther} from "ethers/lib/utils";
 import {BigNumber} from "ethers";
+import Link from "next/link";
 
 
 const CoinFlip = () => {
@@ -165,7 +166,7 @@ const CoinFlip = () => {
                             <button className={styles.betButton} onClick={() => handleChoice(true)}>Heads</button>
                         </div>
                     </div>
-                <br/>
+                    <br/>
                     <div className={styles.grid}>
                         <div className={styles.card}>
                             <button className={styles.betButton} onClick={() => handleChoice(false)}>Tails</button>
@@ -201,19 +202,20 @@ const CoinFlip = () => {
                     {isSuccess && hasWon && (
                         <div>
                             <p className={styles.result}>
-                                Congratulations. Please use the cashout button below to claim your winnings.
+                                Congratulations. Please use the cashout button below to claim your winnings. It should
+                                take about 40 seconds for it to go through.
                             </p>
                             <button className={styles.betButton} disabled={!cashOut} onClick={() => cashOut?.()}>
                                 Cash Out
                             </button>
                         </div>
                     )}
-                    {isSuccess && !hasWon && (
-                        <div>
-                            <p className={styles.result}>
-                                No worries! Play again!
-                            </p>
-                        </div>
+                    {isSuccess1 && hasWon && (
+                        <p className={styles.result}>
+                            Your winnings should have been deposited to your address. Check your wallet to see if they
+                            did.
+                            To see your updated balance on LedgerLuck, please refresh the page.
+                        </p>
                     )}
                 </div>
 
