@@ -18,14 +18,14 @@
 }
 
 .logo {
-font-size: 2rem;
-font-weight: bold;
-color: white;
-text-decoration: none;
-margin-left: 1rem;
-}
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  margin-left: 1rem;
+  }
 
-.navLinks {
+  .navLinks {
 display: flex;
 }
 
@@ -48,31 +48,39 @@ font-size: 3rem;
 margin: 3rem 0 1rem 0;
 }
 
-.description {
+.betContainer {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+.betInput {
+width: 200px;
+margin-bottom: 1rem;
 font-size: 1.5rem;
-margin-bottom: 2rem;
+padding: 0.5rem;
+border-radius: 0.5rem;
+border: none;
 }
 
-.grid {
-display: grid;
-grid-template-columns: repeat(2, 1fr);
-gap: 2rem;
-max-width: 800px;
-margin-bottom: 3rem;
-}
-
-.card {
-background-color: #2d2d2d;
-padding: 2rem;
-border-radius: 1rem;
-text-align: center;
+.betButton {
+font-size: 1.5rem;
+padding: 0.5rem 1rem;
+background-color: #4c4c4c;
 color: white;
-text-decoration: none;
+border-radius: 0.5rem;
+border: none;
+cursor: pointer;
 transition: transform 0.2s ease-in-out;
 }
 
-.card:hover {
+.betButton:hover {
 transform: translateY(-0.2rem);
+}
+
+.result {
+font-size: 2rem;
+margin-top: 2rem;
 }
 
 .footer {
