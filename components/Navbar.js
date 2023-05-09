@@ -12,9 +12,6 @@ const Navbar = () => {
         <Link href="/CoinFlip">
           <a className={styles.navLink}>CoinFlip</a>
         </Link>
-        <Link href="/Lottery">
-          <a className={styles.navLink}>Lottery</a>
-        </Link>
         <Link href="/Contract">
             <a className={styles.navLink}>Smart Contracts</a>
          </Link>

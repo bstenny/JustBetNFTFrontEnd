@@ -36,13 +36,6 @@ const Home = () => {
                 <p>Flip a coin and win some ETH.</p>
               </a>
             </Link>
-
-            <Link href="/Lottery">
-              <a className={styles.card}>
-                <h2>Lottery &rarr;</h2>
-                <p>Enter the lottery and win big.</p>
-              </a>
-            </Link>
           </div>
             <ConnectButton />
         </main>
