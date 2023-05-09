@@ -1,22 +1,45 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useState } from 'react';
+import * as React from 'react'
 import Head from 'next/head';
 import styles from '../styles/CoinFlip.module.css';
 import Navbar from "../components/Navbar";
+import { useAccount, usePrepareContractWrite, useContractWrite } from "wagmi";
+import placeBet from "../contract-abi.json"
 
 const CoinFlip = () => {
-  const [betAmount, setBetAmount] = useState(0);
-  const [result, setResult] = useState('');
-
-  const flipCoin = async () => {
-    // TODO: Implement smart contract interaction here
-    const randomNum = Math.random();
-    if (randomNum >= 0.5) {
-      setResult('You won!');
-    } else {
-      setResult('You lost!');
+    const [choice, setChoice] = React.useState<boolean>(false);
+    const [betAmount, setBetAmount] = React.useState<number>(0);
+    const handleChoice = (value: boolean) => {
+        setChoice(value);
     }
-  };
+    const { isConnected } = useAccount();
+
+    const {config} = usePrepareContractWrite({
+        address: '0xc9478a5072081b65c2491d3E35833CaeeC6306D9',
+        abi: [
+            {
+                inputs: [
+                    {
+                        "internalType": "bool",
+                        "name": "_choice",
+                        "type": "bool"
+                    }
+                ],
+                name: "placeBet",
+                outputs: [],
+                stateMutability: "payable",
+                type: "function"
+            },
+        ],
+        functionName: 'placeBet',
+        args: [choice]
+    })
+    const {data, isLoading, isSuccess, write: placeBet} = useContractWrite(config)
+
+
+    const[result, getResult] = React.useState();
+
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const amount = parseFloat(event.target.value);
@@ -48,9 +71,23 @@ const CoinFlip = () => {
                 value={betAmount}
                 onChange={handleChange}
             />
-            <button className={styles.betButton} onClick={flipCoin}>
+              <div className={styles.grid}>
+                  <div className={styles.card}>
+                  <button className={styles.betButton} onClick={() => handleChoice(true)}>Heads</button>
+                  </div>
+                  <div className={styles.card}>
+                  <button className={styles.betButton} onClick={() => handleChoice(false)}>Tails</button>
+                  </div>
+                  {choice !== null && <p className={styles.result}>Your choice is {choice ? 'heads' : 'tails'}!</p>}
+                  {betAmount !== null && <p className={styles.result}>You are betting: {betAmount}!</p>}
+              </div>
+              {isConnected && (
+                  <button className= {styles.betButton} disabled={!placeBet} onClick={() => placeBet?.()}>
               Flip the coin
-            </button>
+            </button>)
+              }
+              {isLoading && <div> <p className={styles.result}>Check Wallet. Bet is being resolved</p></div>}
+              {isSuccess && <div> <p className={styles.result}>Bet is resolved. Here is the output data: {JSON.stringify(data)}</p></div>}
           </div>
 
           <p className={styles.result}>{result}</p>
