@@ -118,7 +118,7 @@ const Contract = () => {
         <h1 className={styles.title}>Smart Contract</h1>
         <p className={styles.description}>
         We believe that you should know the exact odds that you are playing against.
-        That's why we built LedgerLuck on the blockchain. Our smart contracts are open source and verifiable.
+        That is why we built LedgerLuck on the blockchain. Our smart contracts are open source and verifiable.
         You can check out the code below.
         </p>
         <h1 className={styles.title}>CoinFlip Smart Contract</h1>
