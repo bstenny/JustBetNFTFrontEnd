@@ -1,7 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useState } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
 import styles from '../styles/CoinFlip.module.css';
 import Navbar from '../components/Navbar';
 
@@ -32,12 +31,12 @@ const Lottery = () => {
           content="A simple lottery game"
           name="description"
         />
-        <link href="/favicon.ico" rel="icon" />
       </Head>
 
       <Navbar />
 
       <main className={styles.main}>
+        <ConnectButton />
         <h1 className={styles.title}>Lottery</h1>
 
         <div className={styles.betContainer}>
