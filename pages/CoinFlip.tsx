@@ -4,11 +4,10 @@ import * as React from 'react'
 import Head from 'next/head';
 import styles from '../styles/CoinFlip.module.css';
 import Navbar from "../components/Navbar";
-import {useAccount, usePrepareContractWrite, useContractWrite, useContractEvent, useWaitForTransaction} from "wagmi";
+import {useAccount, usePrepareContractWrite, useContractWrite, useContractEvent} from "wagmi";
 import placeBet from "../contract-abi.json"
 import {parseEther} from "ethers/lib/utils";
 import {BigNumber} from "ethers";
-import Link from "next/link";
 
 
 const CoinFlip = () => {
@@ -188,18 +187,11 @@ const CoinFlip = () => {
                     {isSuccess && hasWon !== null && (
                         <div>
                             <p className={styles.result}>
-                                Bet is resolved. You have {hasWon ? 'won' : 'lost'}!
+                                Bet is resolved. You have {hasWon ? "won" : "lost"}!
                             </p>
                         </div>
                     )}
-                    {isSuccess && hasWon == null && (
-                        <div>
-                            <p className={styles.result}>
-                                Bet is has not yet been resolved. Please wait about a minute for it to finish.
-                            </p>
-                        </div>
-                    )}
-                    {isSuccess && hasWon && (
+                    {isSuccess && hasWon === true && (
                         <div>
                             <p className={styles.result}>
                                 Congratulations. Please use the cashout button below to claim your winnings. It should
@@ -208,6 +200,13 @@ const CoinFlip = () => {
                             <button className={styles.betButton} disabled={!cashOut} onClick={() => cashOut?.()}>
                                 Cash Out
                             </button>
+                        </div>
+                    )}
+                    {isSuccess && hasWon == null && (
+                        <div>
+                            <p className={styles.result}>
+                                Bet is has not yet been resolved. Please wait about a minute for it to finish.
+                            </p>
                         </div>
                     )}
                     {isSuccess1 && hasWon && (

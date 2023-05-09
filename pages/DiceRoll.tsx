@@ -11,46 +11,43 @@ import {BigNumber} from "ethers";
 
 
 const DiceRoll = () => {
-    const [choice, setChoice] = React.useState<boolean>(false);
+    const [rollover, setRollover] = React.useState<number>(50);
     const [betAmount, setBetAmount] = React.useState<string>("0.1");
     const [betId, setBetId] = useState<BigNumber | null>(null);
     const [hasWon, setHasWon] = useState<boolean | null>(null);
-    const handleChoice = (value: boolean) => {
-        setChoice(value);
-    }
     const validAmount = () => {
         const regex = /^\d+(\.\d{1,18})?$/; // Matches valid numbers with optional decimal points, up to 18 decimal places
         return regex.test(betAmount) && parseFloat(betAmount) > 0;
     };
     const {isConnected, address} = useAccount();
     const {config: config1} = usePrepareContractWrite({
-        address: '0xc9478a5072081b65c2491d3E35833CaeeC6306D9',
+        address: '0xd9E8a95b1C84A397b65322B9A432FB9D16f94cf2',
         abi: [
             {
-                inputs: [
+                "inputs": [
                     {
-                        "internalType": "bool",
-                        "name": "_choice",
-                        "type": "bool"
+                        "internalType": "uint16",
+                        "name": "_rollover",
+                        "type": "uint16"
                     }
                 ],
-                name: "placeBet",
-                outputs: [],
-                stateMutability: "payable",
-                type: "function"
+                "name": "placeBet",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
             },
         ],
         functionName: 'placeBet',
-        args: [choice],
+        args: [rollover],
         overrides: validAmount() ? {
-            from: address,
             value: parseEther(betAmount),
-        } : {},
+            from: address,
+        } : undefined,
     })
     const {data, isLoading, isSuccess, write: placeBet} = useContractWrite(config1)
 
     useContractEvent({
-        address: '0xc9478a5072081b65c2491d3E35833CaeeC6306D9',
+        address: '0xd9E8a95b1C84A397b65322B9A432FB9D16f94cf2',
         abi: [
             {
                 "anonymous": false,
@@ -75,15 +72,15 @@ const DiceRoll = () => {
                     },
                     {
                         "indexed": false,
-                        "internalType": "bool",
-                        "name": "choice",
-                        "type": "bool"
+                        "internalType": "uint16",
+                        "name": "rollover",
+                        "type": "uint16"
                     },
                     {
                         "indexed": false,
-                        "internalType": "bool",
+                        "internalType": "uint16",
                         "name": "result",
-                        "type": "bool"
+                        "type": "uint16"
                     },
                     {
                         "indexed": false,
@@ -97,7 +94,7 @@ const DiceRoll = () => {
             },
         ],
         eventName: 'BetResolved',
-        listener(betId: BigNumber, player: string, amount: BigNumber, choice: boolean, result: boolean, won: boolean) {
+        listener(betId: BigNumber, player: string, amount: BigNumber, rollover: number, result: number, won: boolean) {
             console.log(`BetResolved event received with betId: ${betId.toString()} and won: ${won}`);
 
             // You can now use the betId and won variables in your component
@@ -109,7 +106,7 @@ const DiceRoll = () => {
     const [result, getResult] = React.useState();
 
     const {config: config2} = usePrepareContractWrite(betId ? {
-        address: '0xc9478a5072081b65c2491d3E35833CaeeC6306D9',
+        address: '0xd9E8a95b1C84A397b65322B9A432FB9D16f94cf2',
         abi: [
             {
                 "inputs": [
@@ -150,7 +147,10 @@ const DiceRoll = () => {
 
             <main className={styles.main}>
                 <ConnectButton/>
-                <h1 className={styles.title}>DiceRoll - UNFINISHED</h1>
+                <h1 className={styles.title}>DiceRoll</h1>
+                <p className={styles.grid}>Instructions: Move the slider to select a number. If the dice rolls a
+                    number higher than your number, you win! Choosing a higher number will result in a higher payout
+                    upon winning.</p>
                 <div className={styles.betContainer}>
                     <label htmlFor="betAmount">Enter your bet:</label>
                     <input
@@ -160,19 +160,17 @@ const DiceRoll = () => {
                         value={betAmount}
                         onChange={(e) => setBetAmount(e.target.value)}
                     />
-                    <div className={styles.grid}>
-                        <div className={styles.card}>
-                            <button className={styles.betButton} onClick={() => handleChoice(true)}>Heads</button>
-                        </div>
-                    </div>
-                    <br/>
-                    <div className={styles.grid}>
-                        <div className={styles.card}>
-                            <button className={styles.betButton} onClick={() => handleChoice(false)}>Tails</button>
-                        </div>
-                    </div>
-                    {choice !== null &&
-                        <p className={styles.result}>Your choice is {choice ? 'heads' : 'tails'}!</p>}
+                    <label htmlFor="rollover">Rollover:</label>
+                    <input
+                        type="range"
+                        id="rollover"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value={rollover}
+                        onChange={(e) => setRollover(parseInt(e.target.value                    ))}
+                    />
+                    <span>{rollover}</span>
                     {betAmount !== null && <p className={styles.result}>You are betting: {betAmount}!</p>}
                     {isConnected && (
                         <button
@@ -180,15 +178,26 @@ const DiceRoll = () => {
                             disabled={!placeBet || !validAmount()}
                             onClick={() => placeBet?.()}
                         >
-                            Flip the coin
+                            Roll the dice
                         </button>)
                     }
                     {isLoading && <div><p className={styles.result}>Check Wallet. Bet is being resolved</p></div>}
                     {isSuccess && hasWon !== null && (
                         <div>
                             <p className={styles.result}>
-                                Bet is resolved. You have {hasWon ? 'won' : 'lost'}!
+                                Bet is resolved. You have {hasWon ? "won" : "lost"}!
                             </p>
+                        </div>
+                    )}
+                    {isSuccess && hasWon === true && (
+                        <div>
+                            <p className={styles.result}>
+                                Congratulations. Please use the cashout button below to claim your winnings. It should
+                                take about 40 seconds for it to go through.
+                            </p>
+                            <button className={styles.betButton} disabled={!cashOut} onClick={() => cashOut?.()}>
+                                Cash Out
+                            </button>
                         </div>
                     )}
                     {isSuccess && hasWon == null && (
@@ -198,27 +207,7 @@ const DiceRoll = () => {
                             </p>
                         </div>
                     )}
-                    {isSuccess && hasWon && (
-                        <div>
-                            <p className={styles.result}>
-                                Congratulations. Please use the cashout button below to claim your winnings.
-                            </p>
-                            <button className={styles.betButton} disabled={!cashOut} onClick={() => cashOut?.()}>
-                                Cash Out
-                            </button>
-                        </div>
-                    )}
-                    {isSuccess && !hasWon && (
-                        <div>
-                            <p className={styles.result}>
-                                No worries! Play again!
-                            </p>
-                        </div>
-                    )}
                 </div>
-
-                <p className={styles.result}>{result}</p>
-
 
             </main>
 
@@ -232,3 +221,5 @@ const DiceRoll = () => {
 };
 
 export default DiceRoll;
+
+
