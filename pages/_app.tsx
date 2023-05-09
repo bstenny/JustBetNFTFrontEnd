@@ -5,6 +5,7 @@ import type { AppProps } from 'next/app';
 import {configureChains, createClient, sepolia, WagmiConfig} from 'wagmi';
 import { arbitrum, goerli, mainnet, optimism, polygon } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
+import {useEffect, useState} from "react";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [
@@ -29,12 +30,19 @@ const wagmiClient = createClient({
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+    const [ready, setReady] = useState(false);
+
+    useEffect(()=> {setReady(true)}, [])
   return (
+      <>
+          {ready ? (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
         <Component {...pageProps} />
       </RainbowKitProvider>
     </WagmiConfig>
+          ) : null }
+      </>
   );
 }
 

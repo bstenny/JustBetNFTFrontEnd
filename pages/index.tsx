@@ -36,6 +36,12 @@ const Home = () => {
                 <p>Flip a coin and win some ETH.</p>
               </a>
             </Link>
+              <Link href="/DiceRoll">
+                  <a className={styles.card}>
+                      <h2>Dice Roll &rarr;</h2>
+                      <p>Roll a 100 sided Die to win some ETH</p>
+                  </a>
+              </Link>
           </div>
             <ConnectButton />
         </main>

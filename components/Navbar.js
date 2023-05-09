@@ -12,6 +12,9 @@ const Navbar = () => {
         <Link href="/CoinFlip">
           <a className={styles.navLink}>CoinFlip</a>
         </Link>
+          <Link href="/DiceRoll">
+              <a className={styles.navLink}>DiceRoll</a>
+          </Link>
         <Link href="/Contract">
             <a className={styles.navLink}>Smart Contracts</a>
          </Link>

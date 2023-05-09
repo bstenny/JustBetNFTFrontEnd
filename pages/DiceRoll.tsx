@@ -10,7 +10,7 @@ import {parseEther} from "ethers/lib/utils";
 import {BigNumber} from "ethers";
 
 
-const CoinFlip = () => {
+const DiceRoll = () => {
     const [choice, setChoice] = React.useState<boolean>(false);
     const [betAmount, setBetAmount] = React.useState<string>("0.1");
     const [betId, setBetId] = useState<BigNumber | null>(null);
@@ -139,9 +139,9 @@ const CoinFlip = () => {
     return (
         <div className={styles.container}>
             <Head>
-                <title>CoinFlip - LedgerLuck</title>
+                <title>DiceRoll - LedgerLuck</title>
                 <meta
-                    content="A simple coin flipping game"
+                    content="A simple dice rolling game"
                     name="description"
                 />
             </Head>
@@ -150,7 +150,7 @@ const CoinFlip = () => {
 
             <main className={styles.main}>
                 <ConnectButton/>
-                <h1 className={styles.title}>CoinFlip</h1>
+                <h1 className={styles.title}>DiceRoll - UNFINISHED</h1>
                 <div className={styles.betContainer}>
                     <label htmlFor="betAmount">Enter your bet:</label>
                     <input
@@ -165,7 +165,7 @@ const CoinFlip = () => {
                             <button className={styles.betButton} onClick={() => handleChoice(true)}>Heads</button>
                         </div>
                     </div>
-                <br/>
+                    <br/>
                     <div className={styles.grid}>
                         <div className={styles.card}>
                             <button className={styles.betButton} onClick={() => handleChoice(false)}>Tails</button>
@@ -231,4 +231,4 @@ const CoinFlip = () => {
     );
 };
 
-export default CoinFlip;
+export default DiceRoll;
