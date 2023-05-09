@@ -1,68 +1,80 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useState } from 'react';
-import Head from 'next/head';
-import Link from 'next/link';
-import styles from '../styles/CoinFlip.module.css';
-import Navbar from '../components/Navbar';
+import { useEffect, useState } from "react";
+import Web3 from "web3";
+import { CoinFlipGameLINK } from "../lib/contracts/CoinFlipGameLINK";
 
 const CoinFlip = () => {
   const [betAmount, setBetAmount] = useState(0);
-  const [result, setResult] = useState('');
+  const [coinChoice, setCoinChoice] = useState(false);
+  const [contract, setContract] = useState(null);
+  const [contractAddress, setContractAddress] = useState("");
+  const [contractOwner, setContractOwner] = useState("");
+  const [minimumBet, setMinimumBet] = useState(0);
 
-  const flipCoin = async () => {
-    // TODO: Implement smart contract interaction here
-    const randomNum = Math.random();
-    if (randomNum >= 0.5) {
-      setResult('You won!');
-    } else {
-      setResult('You lost!');
+  const loadContract = async () => {
+    try {
+      const web3 = new Web3(Web3.givenProvider);
+      const contract = new web3.eth.Contract(
+          CoinFlipGameLINK.abi,
+          contractAddress
+      );
+      const minimumBet = await contract.methods.minimumBet().call();
+      const contractOwner = await contract.methods.owner().call();
+      setContract(contract);
+      setMinimumBet(minimumBet);
+      setContractOwner(contractOwner);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const amount = parseFloat(event.target.value);
-    setBetAmount(amount);
+  useEffect(() => {
+    setContractAddress("0xabc..."); // Your deployed contract address goes here
+    loadContract();
+  }, []);
+
+  const handleCoinChoiceChange = (event) => {
+    setCoinChoice(event.target.value === "heads");
+  };
+
+  const handleBetAmountChange = (event) => {
+    setBetAmount(event.target.value);
+  };
+
+  const placeBet = async () => {
+    try {
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const betAmountInWei = new Web3.utils.toWei(betAmount, "ether");
+      await contract.methods
+          .placeBet(coinChoice)
+          .send({ from: accounts[0], value: betAmountInWei });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>CoinFlip - LedgerLuck</title>
-        <meta
-          content="A simple coin flipping game"
-          name="description"
-        />
-        <link href="/favicon.ico" rel="icon" />
-      </Head>
-
-      <Navbar />
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>CoinFlip</h1>
-
-        <div className={styles.betContainer}>
-          <label htmlFor="betInput">Enter your bet:</label>
+      <div>
+        <h1>Coin Flip Game</h1>
+        <div>
+          <label htmlFor="bet-amount">Bet Amount (in Ether)</label>
           <input
-            type="number"
-            id="betInput"
-            className={styles.betInput}
-            value={betAmount}
-            onChange={handleChange}
+              type="number"
+              min={minimumBet / 1e18}
+              step={0.01}
+              onChange={handleBetAmountChange}
           />
-          <button className={styles.betButton} onClick={flipCoin}>
-            Flip the coin
-          </button>
         </div>
-
-        <p className={styles.result}>{result}</p>
-      </main>
-
-      <footer className={styles.footer}>
-        <a href="https://rainbow.me" rel="noopener noreferrer" target="_blank">
-          Made with ❤️ by your frens at 🌈
-        </a>
-      </footer>
-    </div>
+        <div>
+          <label htmlFor="coin-choice">Choose Heads or Tails:</label>
+          <select id="coin-choice" onChange={handleCoinChoiceChange}>
+            <option value="heads">Heads</option>
+            <option value="tails">Tails</option>
+          </select>
+        </div>
+        <button onClick={placeBet}>Place Bet</button>
+      </div>
   );
 };
 
