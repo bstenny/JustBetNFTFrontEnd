@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Web3 from "web3";
-import { CoinFlipGameLINK } from "../lib/contracts/CoinFlipGameLINK";
+import { CoinFlipGameLINK } from "../../contracts/CoinFlipGameLINK.sol";
 
 const CoinFlip = () => {
   const [betAmount, setBetAmount] = useState(0);
@@ -28,7 +28,7 @@ const CoinFlip = () => {
   };
 
   useEffect(() => {
-    setContractAddress("0xabc..."); // Your deployed contract address goes here
+    setContractAddress("0x87406B718845A4194a13d9a8909F80A5Ec9d38A1"); // Your deployed contract address goes here
     loadContract();
   }, []);
 
