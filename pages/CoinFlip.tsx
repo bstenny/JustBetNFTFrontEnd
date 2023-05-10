@@ -151,6 +151,11 @@ const CoinFlip = () => {
             <main className={styles.main}>
                 <ConnectButton/>
                 <h1 className={styles.title}>CoinFlip</h1>
+                <p className={styles.grid}>Instructions: Click either heads or tails to make your selection.
+                    Input a minimum of 0.01 for the bet amount.
+                    Click the flip the coin button
+                    to initiate the smart contract. Please do not click
+                    it again until the contracts have been resolved. </p>
                 <div className={styles.betContainer}>
                     <label htmlFor="betAmount">Enter your bet:</label>
                     <input
@@ -195,7 +200,7 @@ const CoinFlip = () => {
                         <div>
                             <p className={styles.result}>
                                 Congratulations. Please use the cashout button below to claim your winnings. It should
-                                take about 40 seconds for it to go through.
+                                take about 40 seconds for it to go through. We will post an update when it does go through.
                             </p>
                             <button className={styles.betButton} disabled={!cashOut} onClick={() => cashOut?.()}>
                                 Cash Out

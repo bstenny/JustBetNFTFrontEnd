@@ -150,7 +150,9 @@ const DiceRoll = () => {
                 <h1 className={styles.title}>DiceRoll</h1>
                 <p className={styles.grid}>Instructions: Move the slider to select a number. If the dice rolls a
                     number higher than your number, you win! Choosing a higher number will result in a higher payout
-                    upon winning.</p>
+                    upon winning. Input a minimum of 0.01 for the bet amount. Click the roll the dice button to initiate
+                    the smart contract. Please do not click
+                    it again until the contracts have been resolved. </p>
                 <div className={styles.betContainer}>
                     <label htmlFor="betAmount">Enter your bet:</label>
                     <input
@@ -193,7 +195,7 @@ const DiceRoll = () => {
                         <div>
                             <p className={styles.result}>
                                 Congratulations. Please use the cashout button below to claim your winnings. It should
-                                take about 40 seconds for it to go through.
+                                take about 40 seconds for it to go through. We will post an update when it does go through.
                             </p>
                             <button className={styles.betButton} disabled={!cashOut} onClick={() => cashOut?.()}>
                                 Cash Out
@@ -206,6 +208,13 @@ const DiceRoll = () => {
                                 Bet is has not yet been resolved. Please wait about a minute for it to finish.
                             </p>
                         </div>
+                    )}
+                    {isSuccess1 && hasWon && (
+                        <p className={styles.result}>
+                            Your winnings should have been deposited to your address. Check your wallet to see if they
+                            did.
+                            To see your updated balance on LedgerLuck, please refresh the page.
+                        </p>
                     )}
                 </div>
 
