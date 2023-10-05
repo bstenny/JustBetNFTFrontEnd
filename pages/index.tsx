@@ -64,7 +64,7 @@ const Home = () => {
 
         <main className={styles.main}>
 
-        <Image src="/justbetontron.png" alt="JustBetOnTron Logo" width={500} height={500} />
+        <Image src="/justbetontron.png" alt="JustBetOnTron Logo" width={300} height={300} />
 
             <h1 className={styles.title}>Welcome to JustBetOnTron</h1>
 
