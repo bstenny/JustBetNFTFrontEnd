@@ -6,20 +6,13 @@ const Navbar = () => {
   return (
     <nav className={styles.navbar}>
       <Link href="/">
-        <a className={styles.logo}>LedgerLuck</a>
+        <a className={styles.logo}>JustBet</a>
       </Link>
-      <div className={styles.navLinks}>
-        <Link href="/CoinFlip">
-          <a className={styles.navLink}>CoinFlip</a>
-        </Link>
+      <div className={styles.navLink}>
           <Link href="/DiceRoll">
               <a className={styles.navLink}>DiceRoll</a>
           </Link>
-        <Link href="/Contract">
-            <a className={styles.navLink}>Smart Contracts</a>
-         </Link>
       </div>
-      <ConnectButton />
     </nav>
   );
 };

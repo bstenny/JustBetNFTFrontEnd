@@ -1,16 +1,56 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as React from 'react'
 import Head from 'next/head';
 import styles from '../styles/CoinFlip.module.css';
 import Navbar from "../components/Navbar";
 import { useAccount, usePrepareContractWrite, useContractWrite, useContractEvent, useWaitForTransaction } from "wagmi";
-import placeBet from "../contract-abi.json"
+import JustBetOnDice from "../JustBetOnDice.json"
 import {parseEther} from "ethers/lib/utils";
 import {BigNumber} from "ethers";
 
+declare global {
+  interface Window {
+    tronWeb: any;
+  }
+}
 
 const DiceRoll = () => {
+    const [tronWebState, setTronWebState] = useState({
+        installed: false,
+        loggedIn: false,
+    });
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            if (window.tronWeb) {
+                setTronWebState({
+                    installed: true,
+                    loggedIn: window.tronWeb.ready,
+                });
+            } else {
+                window.addEventListener('message', ({ data }) => {
+                    if (data.message && data.message.action == 'setAccount') {
+                        setTronWebState({
+                            installed: true,
+                            loggedIn: window.tronWeb && window.tronWeb.ready,
+                        });
+                    }
+                });
+            }
+        }
+    }, []);
+
+    const ConnectWalletButton = () => {
+        if (!tronWebState.installed) {
+          return <div>TronLink is not installed. Please install it.</div>;
+        } else if (!tronWebState.loggedIn) {
+          return <div>Please log in to TronLink.</div>;
+        } else {
+          return <div>TronLink is installed and logged in.</div>;
+        }
+      };
+      
     const [rollover, setRollover] = React.useState<number>(50);
     const [betAmount, setBetAmount] = React.useState<string>("0.1");
     const [betId, setBetId] = useState<BigNumber | null>(null);
@@ -22,21 +62,7 @@ const DiceRoll = () => {
     const {isConnected, address} = useAccount();
     const {config: config1} = usePrepareContractWrite({
         address: '0xd9E8a95b1C84A397b65322B9A432FB9D16f94cf2',
-        abi: [
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint16",
-                        "name": "_rollover",
-                        "type": "uint16"
-                    }
-                ],
-                "name": "placeBet",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
-            },
-        ],
+        abi: JustBetOnDice,
         functionName: 'placeBet',
         args: [rollover],
         overrides: validAmount() ? {
@@ -48,51 +74,7 @@ const DiceRoll = () => {
 
     useContractEvent({
         address: '0xd9E8a95b1C84A397b65322B9A432FB9D16f94cf2',
-        abi: [
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "betId",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "address",
-                        "name": "player",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint16",
-                        "name": "rollover",
-                        "type": "uint16"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint16",
-                        "name": "result",
-                        "type": "uint16"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "bool",
-                        "name": "won",
-                        "type": "bool"
-                    }
-                ],
-                "name": "BetResolved",
-                "type": "event"
-            },
-        ],
+        abi: JustBetOnDice,
         eventName: 'BetResolved',
         listener(betId: BigNumber, player: string, amount: BigNumber, rollover: number, result: number, won: boolean) {
             console.log(`BetResolved event received with betId: ${betId.toString()} and won: ${won}`);
@@ -107,21 +89,7 @@ const DiceRoll = () => {
 
     const {config: config2} = usePrepareContractWrite(betId ? {
         address: '0xd9E8a95b1C84A397b65322B9A432FB9D16f94cf2',
-        abi: [
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_id",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "cashout",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-        ],
+        abi: JustBetOnDice,
         functionName: 'cashout',
         args: [betId],
         overrides: {
@@ -146,7 +114,6 @@ const DiceRoll = () => {
             <Navbar/>
 
             <main className={styles.main}>
-                <ConnectButton/>
                 <h1 className={styles.title}>DiceRoll</h1>
                 <p className={styles.grid}>Instructions: Move the slider to select a number. If the dice rolls a
                     number higher than your number, you win! Choosing a higher number will result in a higher payout
@@ -174,7 +141,7 @@ const DiceRoll = () => {
                     />
                     <span>{rollover}</span>
                     {betAmount !== null && <p className={styles.result}>You are betting: {betAmount}!</p>}
-                    {isConnected && (
+                    {tronWebState.installed && tronWebState.loggedIn && (
                         <button
                             className={styles.betButton}
                             disabled={!placeBet || !validAmount()}
@@ -217,7 +184,7 @@ const DiceRoll = () => {
                         </p>
                     )}
                 </div>
-
+                <ConnectWalletButton />
             </main>
 
             <footer className={styles.footer}>
