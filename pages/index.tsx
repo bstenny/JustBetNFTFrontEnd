@@ -3,8 +3,52 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Navbar from "../components/Navbar";
 import Link from "next/link";
+import Image from 'next/image';
+
+declare global {
+  interface Window {
+    tronWeb: any;
+  }
+}
+import { useState, useEffect } from 'react';
 
 const Home = () => {
+
+  const [tronWebState, setTronWebState] = useState({
+    installed: false,
+    loggedIn: false,
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (window.tronWeb) {
+        setTronWebState({
+          installed: true,
+          loggedIn: window.tronWeb.ready,
+        });
+      } else {
+        window.addEventListener('message', ({ data }) => {
+          if (data.message && data.message.action == 'setAccount') {
+            setTronWebState({
+              installed: true,
+              loggedIn: window.tronWeb && window.tronWeb.ready,
+            });
+          }
+        });
+      }
+    }
+  }, []);
+
+  const ConnectWalletButton = () => {
+    if (!tronWebState.installed) {
+      return <div>TronLink is not installed. Please install it.</div>;
+    } else if (!tronWebState.loggedIn) {
+      return <div>Please log in to TronLink.</div>;
+    } else {
+      return <div>TronLink is installed and logged in.</div>;
+    }
+  };
+
   return (
       <div className={styles.container}>
         <Head>
@@ -20,22 +64,18 @@ const Home = () => {
 
         <main className={styles.main}>
 
-            <h1 className={styles.title}>Welcome to LedgerLuck</h1>
+        <Image src="/justbetontron.png" alt="JustBetOnTron Logo" width={500} height={500} />
+
+            <h1 className={styles.title}>Welcome to JustBetOnTron</h1>
 
             <p className={styles.description}>
                 A decentralized casino powered by{' '}
-                <a href="https://rainbow.me" className={styles.link}>
-                    RainbowKit
+                <a href="https://www.tronlink.org/" className={styles.link}>
+                    Tron Link.
                 </a>
             </p>
 
-          <div className={styles.grid}>
-            <Link href="/CoinFlip">
-              <a className={styles.card}>
-                <h2>Coin Flip &rarr;</h2>
-                <p>Flip a coin and win some ETH.</p>
-              </a>
-            </Link>
+          <div className={styles.grid} style={{display: 'flex', justifyContent: 'center'}}>
               <Link href="/DiceRoll">
                   <a className={styles.card}>
                       <h2>Dice Roll &rarr;</h2>
@@ -43,12 +83,12 @@ const Home = () => {
                   </a>
               </Link>
           </div>
-            <ConnectButton />
+            <ConnectWalletButton />
         </main>
 
         <footer className={styles.footer}>
-          <a href="https://rainbow.me" rel="noopener noreferrer" target="_blank">
-            Made with ❤️ by your frens at 🌈
+          <a href="https://www.tronlink.org/" rel="noopener noreferrer" target="_blank">
+            Check out tronlink.org
           </a>
         </footer>
       </div>
